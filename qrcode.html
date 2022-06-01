@@ -18,20 +18,20 @@
                     liffId: defaultLiffId
                 })
                 .then(() => {
-                    liff.scanCodeV2().then(result => {
+                    liff.scanCodeV2().then(async result => {
                         const stringifiedResult = result.value;
-                        liff.sendMessages([{
+                        await liff.sendMessages([{
                             'type': 'text',
                             'text': 'スキャンしたコード: ' + stringifiedResult
                         }]).then(() => {
+                            // Make sure to close the window
+                            liff.closeWindow();
                         }).catch((error) => {
                             window.alert('Error sending message: ' + error);
                         });
                     }).catch(err => {
                         window.alert('scanCode failed!\n' + err);
                     });
-                    // Make sure to close the window
-                    liff.closeWindow();
                 })
                 .catch((err) => {
                     window.alert('Something went wrong with LIFF initialization.');
