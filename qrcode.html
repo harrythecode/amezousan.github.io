@@ -22,9 +22,8 @@
                         const stringifiedResult = result.value;
                         liff.sendMessages([{
                             'type': 'text',
-                            'text': 'Msg: ' + stringifiedResult
+                            'text': 'スキャンしたコード: ' + stringifiedResult
                         }]).then(() => {
-                            window.alert('Message Sent: ' + stringifiedResult);
                             liff.closeWindow();
                         }).catch((error) => {
                             window.alert('Error sending message: ' + error);
@@ -36,6 +35,8 @@
                 .catch((err) => {
                     window.alert('Something went wrong with LIFF initialization.');
                 });
+                
+                liff.closeWindow();
             }
         </script>
     </body>
