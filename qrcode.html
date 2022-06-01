@@ -7,42 +7,32 @@
     <body>
         <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
         <script>
-            window.addEventListener('load', async () => {
-                const defaultLiffId = "1657181939-KgqvllNZ";
-                const liffClient = await setLiffClient(defaultLiffId)
-                const scanResult = await getScanCode(liffClient)
-                
-                liffClient(() => {
-                    if(scanResult) {
-                        liff.sendMessages([{
-                                'type': 'text',
-                                'text': 'スキャンしたコード: ' + scanResult
-                            }]).then(() => {
-                                window.alert('Message Sent')
-                            }).catch((err) => {
-                                window.alert('Error sending message: ' + err);
-                            });
-                    }
-                    liff.closeWindow();
-                });
-            });
-            
-            // ***
-            // * Functions
-            const setLiffClient = (defaultLiffId) => {
-              return (func) => { liff.init({ liffId: defaultLiffId }).then(func) }
-            }
+            window.onload = function() {
+            const defaultLiffId = "1657181939-KgqvllNZ";
+            initializeLiff(defaultLiffId);
+            };
 
-            const getScanCode = async (liffClient) => {
-                liffClient(() => {
+            function initializeLiff(defaultLiffId) {
+                liff
+                .init({
+                    liffId: defaultLiffId
+                })
+                .then(() => {
                     liff.scanCodeV2().then(result => {
-                        return result.value;
-                    }).catch(err => {
-                        window.alert('scanCode failed!\n' + err);
+                        const stringifiedResult = result.value;
+                        liff.sendMessages([{
+                            'type': 'text',
+                            'text': stringifiedResult
+                        }]).then(() => {
+                            liff.closeWindow();
+                        }).catch((error) => {
+                            window.alert('Error sending message: ' + error);
+                        });
+                    }).catch((error) => {
+                        window.alert('scanCode failed!');
                     });
                 });
             }
-            // ***
         </script>
     </body>
 </html>
