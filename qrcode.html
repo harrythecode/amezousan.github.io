@@ -7,35 +7,42 @@
     <body>
         <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
         <script>
-            window.onload = function() {
+            window.addEventListener('load', async () => {
                 const defaultLiffId = "1657181939-KgqvllNZ";
-                initializeLiff(defaultLiffId);
-            };
-            
-            function initializeLiff(defaultLiffId) {
-                liff
-                .init({
-                    liffId: defaultLiffId
-                })
-                .then(async () => {
-                    await liff.scanCodeV2().then(result => {
-                        const stringifiedResult = result.value;
+                const liffClient = await setLiffClient(defaultLiffId)
+                const scanResult = await getScanCode(liffClient)
+                
+                liffClient(() => {
+                    if(scanResult) {
                         liff.sendMessages([{
-                            'type': 'text',
-                            'text': 'スキャンしたコード: ' + stringifiedResult
-                        }]).then(() => {
-                        }).catch((error) => {
-                            window.alert('Error sending message: ' + error);
-                        });
+                                'type': 'text',
+                                'text': 'スキャンしたコード: ' + scanResult
+                            }]).then(() => {
+                                window.alert('Message Sent')
+                            }).catch((err) => {
+                                window.alert('Error sending message: ' + err);
+                            });
+                    }
+                    liff.closeWindow();
+                });
+            });
+            
+            // ***
+            // * Functions
+            const setLiffClient = (defaultLiffId) => {
+              return (func) => { liff.init({ liffId: defaultLiffId }).then(func) }
+            }
+
+            const getScanCode = async (liffClient) => {
+                liffClient(() => {
+                    liff.scanCodeV2().then(result => {
+                        return result.value;
                     }).catch(err => {
                         window.alert('scanCode failed!\n' + err);
                     });
-                    liff.closeWindow();
-                })
-                .catch((err) => {
-                    window.alert('Something went wrong with LIFF initialization.');
                 });
             }
+            // ***
         </script>
     </body>
 </html>
